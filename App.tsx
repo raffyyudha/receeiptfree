@@ -636,15 +636,53 @@ const App: React.FC = () => {
         </div>
       </section>
 
+      {/* --- Cross-Sell CTA: DraftKit --- */}
+      <section className="bg-slate-900 py-20 relative overflow-hidden">
+        {/* Background Decoration */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
+          <div className="absolute -top-[20%] -right-[10%] w-[500px] h-[500px] bg-emerald-500 rounded-full blur-[120px]"></div>
+          <div className="absolute -bottom-[20%] -left-[10%] w-[400px] h-[400px] bg-indigo-500 rounded-full blur-[100px]"></div>
+        </div>
+
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 relative z-10 text-center">
+          <div className="inline-block px-4 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-bold uppercase tracking-widest text-emerald-400 mb-8 shadow-xl">
+            Recommended Tool
+          </div>
+
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-6">
+            Need to send a <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Professional Invoice?</span>
+          </h2>
+
+          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
+            Receipts are for payments made. Invoices are for getting paid.
+            Generate beautiful, branded PDF invoices for free with our sister tool.
+          </p>
+
+          <a
+            href="https://draftkit.online"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-lg hover:-translate-y-1 transition-all shadow-[0_20px_40px_-15px_rgba(255,255,255,0.2)]"
+          >
+            <span>Go to DraftKit Invoices</span>
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </a>
+
+          <p className="mt-6 text-sm text-slate-500 font-medium">
+            100% Free • No Sign-up • No Watermark
+          </p>
+        </div>
+      </section>
+
       {/* --- Footer --- */}
-      <footer className="bg-slate-900 text-slate-400 py-12">
+      <footer className="bg-slate-950 text-slate-500 py-12 border-t border-slate-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <Receipt className="text-white" size={24} />
-            <span className="font-bold text-white text-lg">ReceiptGen</span>
+            <Receipt className="text-slate-400" size={24} />
+            <span className="font-bold text-slate-300 text-lg">FreeReceipt</span>
           </div>
           <div className="text-sm">
-            © {new Date().getFullYear()} ReceiptGen. All rights reserved.
+            © {new Date().getFullYear()} FreeReceipt. All rights reserved.
           </div>
         </div>
       </footer>
