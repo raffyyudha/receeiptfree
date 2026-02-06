@@ -190,11 +190,7 @@ const App: React.FC = () => {
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-900">FreeReceipt</span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-            <a href="#features" className="hover:text-slate-900 transition-colors">Features</a>
-            <a href="#faq" className="hover:text-slate-900 transition-colors">FAQ</a>
-            <Button size="sm" onClick={scrollToGenerator}>Start Now</Button>
-          </div>
+
         </div>
       </nav>
 
