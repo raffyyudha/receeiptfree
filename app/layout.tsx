@@ -8,6 +8,9 @@ const plusJakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-pl
 export const metadata: Metadata = {
     title: 'Free Receipt Generator',
     description: 'Generate free PDF receipts instantly.',
+    verification: {
+        google: 'google9ff6ae450a261cc5',
+    }
 }
 
 export default function RootLayout({
