@@ -5,6 +5,14 @@ import { ReceiptGenerator } from '../../components/ReceiptGenerator';
 import { Metadata } from 'next';
 import { Receipt, Zap, ArrowRight } from 'lucide-react';
 
+const VARIATIONS = [
+    { prefix: 'receipt-template-for', label: 'Receipt Template', type: 'Receipt' },
+    { prefix: 'invoice-template-for', label: 'Invoice Template', type: 'Invoice' },
+    { prefix: 'bill-format-for', label: 'Bill Format', type: 'Bill' },
+    { prefix: 'cash-receipt-for', label: 'Cash Receipt', type: 'Receipt' },
+    { prefix: 'payment-proof-for', label: 'Payment Proof', type: 'Proof' }
+];
+
 function slugify(text: string) {
     return text.toString().toLowerCase()
         .replace(/\s+/g, '-')
@@ -20,9 +28,12 @@ function getDataFromSlug(slug: string) {
             const citySlug = slugify(city);
             for (const ind of INDUSTRIES) {
                 const indSlug = ind.slug;
-                const targetSlug = `receipt-template-for-${indSlug}-in-${citySlug}`;
-                if (slug === targetSlug) {
-                    return { country, city, industry: ind };
+
+                for (const vary of VARIATIONS) {
+                    const targetSlug = `${vary.prefix}-${indSlug}-in-${citySlug}`;
+                    if (slug === targetSlug) {
+                        return { country, city, industry: ind, variation: vary };
+                    }
                 }
             }
         }
@@ -34,10 +45,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     const data = getDataFromSlug(params.slug);
     if (!data) return {};
 
-    const { country, city, industry } = data;
+    const { country, city, industry, variation } = data;
     return {
-        title: `Free Receipt Template for ${industry.title} in ${city} (${country.code})`,
-        description: `Generate professional ${industry.title} receipts in ${city}. No watermark, free PDF. Compliant with ${country.name} tax rules.`
+        title: `Free ${variation.label} for ${industry.title} in ${city} (${country.code})`,
+        description: `Generate professional ${variation.label} for ${industry.title} in ${city}. No watermark, free PDF. Compliant with ${country.name} tax rules.`
     };
 }
 
@@ -45,16 +56,14 @@ export default function PseoPage({ params }: { params: { slug: string } }) {
     const data = getDataFromSlug(params.slug);
     if (!data) notFound();
 
-    const { country, city, industry } = data;
+    const { country, city, industry, variation } = data;
 
     // Prepare Prefill Data
     let intro = INTRO_TEMPLATES[Math.floor(Math.random() * INTRO_TEMPLATES.length)];
-    intro = intro.replace('{industry}', industry.title)
-        .replace('{location}', city)
-        .replace('{country}', country.name)
-        .replace('{verb}', industry.verb)
-        .replace('{currency}', country.currency)
-        .replace('{taxLabel}', country.taxLabel);
+    // Fallback simple intro if templates don't match exactly
+    if (!intro.includes('{variation}')) {
+        intro = `Looking for a <strong>free ${variation.label}</strong> for ${industry.title} in ${city}? You've found the best tool. Our generator is tailored specifically for ${industry.title} needs in ${country.name}.`;
+    }
 
     const prefillData = {
         currency: country.currency,
@@ -67,7 +76,7 @@ export default function PseoPage({ params }: { params: { slug: string } }) {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": `Free Receipt Generator for ${industry.title}`,
+        "name": `Free ${variation.label} for ${industry.title}`,
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Any",
         "offers": {
@@ -75,7 +84,7 @@ export default function PseoPage({ params }: { params: { slug: string } }) {
             "price": "0",
             "priceCurrency": "USD"
         },
-        "description": `Free online tool to generate PDF receipts for ${industry.title} professionals in ${city}. No signup required.`,
+        "description": `Free online tool to generate ${variation.label} for ${industry.title} professionals in ${city}. No signup required.`,
         "aggregateRating": {
             "@type": "AggregateRating",
             "ratingValue": "4.9",
@@ -110,7 +119,7 @@ export default function PseoPage({ params }: { params: { slug: string } }) {
                     </div>
 
                     <h1 className="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-6xl mb-6 drop-shadow-sm uppercase">
-                        Receipt Generator for <br />
+                        {variation.label} for <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-slate-900">{industry.title}s in {city}</span>
                     </h1>
 
@@ -140,3 +149,4 @@ export default function PseoPage({ params }: { params: { slug: string } }) {
         </div>
     );
 }
+
