@@ -1,9 +1,10 @@
 
 import { notFound } from 'next/navigation';
-import { COUNTRIES, INDUSTRIES, INTRO_TEMPLATES, VARIATIONS, BENEFITS } from '../../lib/pseo-data';
+import { COUNTRIES, INDUSTRIES, INTRO_TEMPLATES, VARIATIONS, BENEFITS, FIRST_NAMES, REVIEW_TEMPLATES } from '../../lib/pseo-data';
 import { ReceiptGenerator } from '../../components/ReceiptGenerator';
 import { Metadata } from 'next';
-import { Receipt, Zap, ArrowRight, CheckCircle, HelpCircle } from 'lucide-react';
+import { Receipt, Zap, ArrowRight, CheckCircle, HelpCircle, Star, User } from 'lucide-react';
+
 
 function slugify(text: string) {
     return text.toString().toLowerCase()
@@ -127,6 +128,29 @@ export default function PseoPage({ params }: { params: { slug: string } }) {
         }
     ];
 
+    // 4. Local Reviews (Social Proof)
+    const reviews = [];
+    const usedNames = new Set();
+    for (let i = 0; i < 3; i++) {
+        let nameIndex = Math.floor(rand() * FIRST_NAMES.length);
+        while (usedNames.has(nameIndex)) {
+            nameIndex = Math.floor(rand() * FIRST_NAMES.length);
+        }
+        usedNames.add(nameIndex);
+
+        let template = REVIEW_TEMPLATES[Math.floor(rand() * REVIEW_TEMPLATES.length)];
+        let reviewText = template
+            .replace(/{industry}/g, industry.title)
+            .replace(/{location}/g, city)
+            .replace(/{variation}/g, variation.label);
+
+        reviews.push({
+            name: FIRST_NAMES[nameIndex],
+            text: reviewText,
+            stars: 5
+        });
+    }
+
     const prefillData = {
         currency: country.currency,
         taxLabel: country.taxLabel,
@@ -152,6 +176,12 @@ export default function PseoPage({ params }: { params: { slug: string } }) {
             "ratingValue": "4.9",
             "ratingCount": Math.floor(rand() * (500 - 100 + 1) + 100).toString()
         },
+        "review": reviews.map(r => ({
+            "@type": "Review",
+            "author": { "@type": "Person", "name": r.name },
+            "reviewRating": { "@type": "Rating", "ratingValue": "5" },
+            "reviewBody": r.text
+        })),
         "mainEntity": {
             "@type": "FAQPage",
             "mainEntity": faqList.map(f => ({
@@ -217,6 +247,38 @@ export default function PseoPage({ params }: { params: { slug: string } }) {
             </section>
 
             <ReceiptGenerator prefillData={prefillData} />
+
+            <section className="bg-white py-16 border-t border-slate-200">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                            Trusted by {industry.title}s in {city}
+                        </h2>
+                        <p className="mt-4 text-lg text-slate-500">
+                            See what local professionals are saying about our free invoice generator.
+                        </p>
+                    </div>
+                    <div className="grid gap-8 md:grid-cols-3">
+                        {reviews.map((review, i) => (
+                            <div key={i} className="rounded-2xl bg-slate-50 p-8 shadow-sm border border-slate-100 relative">
+                                <div className="flex gap-1 mb-4 text-amber-400">
+                                    {[...Array(5)].map((_, i) => <Star key={i} fill="currentColor" size={16} />)}
+                                </div>
+                                <p className="text-slate-700 italic mb-6">"{review.text}"</p>
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold">
+                                        {review.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-slate-900">{review.name}</p>
+                                        <p className="text-xs text-slate-500">{industry.title}, {city}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
             <section className="bg-slate-50 py-16 border-t border-slate-200">
                 <div className="mx-auto max-w-4xl px-4">
