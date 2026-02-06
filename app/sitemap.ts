@@ -33,44 +33,56 @@ function slugify(text: string) {
 }
 
 export default function sitemap({ id }: { id: string }): MetadataRoute.Sitemap {
+    if (!id || typeof id !== 'string' || !id.includes('-')) {
+        return [];
+    }
+
     // id format: "CODE-CHUNK_INDEX" e.g. "US-0", "US-1"
-    const [countryCode, chunkIndexStr] = id.split('-');
-    const chunkIndex = parseInt(chunkIndexStr, 10);
+    const parts = id.split('-');
+    if (parts.length < 2) return [];
+
+    const countryCode = parts[0];
+    const chunkIndex = parseInt(parts[1], 10);
 
     const country = COUNTRIES.find(c => c.code === countryCode);
     if (!country) return [];
 
     const urls: MetadataRoute.Sitemap = [];
 
-    // Flatten all combinations for this country
-    const allCombinations: { city: string, industry: any, vary: any }[] = [];
-
-    for (const city of country.cities) {
-        for (const ind of INDUSTRIES) {
-            for (const vary of VARIATIONS) {
-                allCombinations.push({ city, industry: ind, vary });
-            }
-        }
-    }
-
-    // Slice the array based on chunk index
+    // Calculate start and end indices for the requested chunk
     const start = chunkIndex * MAX_URLS_PER_SITEMAP;
     const end = start + MAX_URLS_PER_SITEMAP;
-    const chunk = allCombinations.slice(start, end);
 
-    for (const combo of chunk) {
-        const citySlug = slugify(combo.city);
-        const indSlug = combo.industry.slug;
-        // Construct URL: /prefix-industry-in-city
-        // e.g. /receipt-template-for-plumber-in-new-york
-        const slug = `${combo.vary.prefix}-${indSlug}-in-${citySlug}`;
+    // Iterate through combinations and only collect those within the start/end range
+    // This is MUCH more memory efficient than pre-building the entire list
+    let currentIndex = 0;
+    let itemsAdded = 0;
 
-        urls.push({
-            url: `https://freereceipt.online/${slug}`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.8,
-        });
+    for (const city of country.cities) {
+        if (itemsAdded >= MAX_URLS_PER_SITEMAP) break;
+
+        for (const ind of INDUSTRIES) {
+            if (itemsAdded >= MAX_URLS_PER_SITEMAP) break;
+
+            for (const vary of VARIATIONS) {
+                if (currentIndex >= start && currentIndex < end) {
+                    const citySlug = slugify(city);
+                    const indSlug = ind.slug;
+                    const slug = `${vary.prefix}-${indSlug}-in-${citySlug}`;
+
+                    urls.push({
+                        url: `https://freereceipt.online/${slug}`,
+                        lastModified: new Date(),
+                        changeFrequency: 'monthly',
+                        priority: 0.8,
+                    });
+                    itemsAdded++;
+                }
+
+                currentIndex++;
+                if (itemsAdded >= MAX_URLS_PER_SITEMAP) break;
+            }
+        }
     }
 
     // Add homepage only to the first chunk of US
