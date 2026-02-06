@@ -1,17 +1,10 @@
 
 import { notFound } from 'next/navigation';
-import { COUNTRIES, INDUSTRIES, INTRO_TEMPLATES } from '../../lib/pseo-data';
+import { COUNTRIES, INDUSTRIES, INTRO_TEMPLATES, VARIATIONS } from '../../lib/pseo-data';
 import { ReceiptGenerator } from '../../components/ReceiptGenerator';
 import { Metadata } from 'next';
 import { Receipt, Zap, ArrowRight } from 'lucide-react';
 
-const VARIATIONS = [
-    { prefix: 'receipt-template-for', label: 'Receipt Template', type: 'Receipt' },
-    { prefix: 'invoice-template-for', label: 'Invoice Template', type: 'Invoice' },
-    { prefix: 'bill-format-for', label: 'Bill Format', type: 'Bill' },
-    { prefix: 'cash-receipt-for', label: 'Cash Receipt', type: 'Receipt' },
-    { prefix: 'payment-proof-for', label: 'Payment Proof', type: 'Proof' }
-];
 
 function slugify(text: string) {
     return text.toString().toLowerCase()

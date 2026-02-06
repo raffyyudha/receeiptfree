@@ -1,16 +1,8 @@
 
 import { MetadataRoute } from 'next'
-import { COUNTRIES, INDUSTRIES } from '../lib/pseo-data'
+import { COUNTRIES, INDUSTRIES, VARIATIONS } from '../lib/pseo-data'
 
 export const revalidate = 3600
-
-const VARIATIONS = [
-    { prefix: 'receipt-template-for', label: 'Receipt Template' },
-    { prefix: 'invoice-template-for', label: 'Invoice Template' },
-    { prefix: 'bill-format-for', label: 'Bill Format' },
-    { prefix: 'cash-receipt-for', label: 'Cash Receipt' },
-    { prefix: 'payment-proof-for', label: 'Payment Proof' }
-];
 
 // Maximum URLs per sitemap file (Google limit is 50k, we stay safe at 40k)
 const MAX_URLS_PER_SITEMAP = 40000;
