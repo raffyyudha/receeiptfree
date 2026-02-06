@@ -135,6 +135,61 @@ export default function PseoPage({ params }: { params: { slug: string } }) {
 
             <ReceiptGenerator prefillData={prefillData} />
 
+
+            <section className="bg-slate-50 py-16 border-t border-slate-200">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+                        {/* 1. Related Professions in Same City */}
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-200 pb-2">
+                                More Invoice Tools in {city}
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {INDUSTRIES
+                                    .filter(ind => ind.slug !== industry.slug) // Exclude current
+                                    .sort(() => 0.5 - Math.random()) // Shuffle
+                                    .slice(0, 15) // Taking 15 random items
+                                    .map((ind) => (
+                                        <a
+                                            key={ind.slug}
+                                            href={`/${variation.prefix}-${ind.slug}-in-${slugify(city)}`}
+                                            className="text-sm text-slate-600 bg-white px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-900 hover:text-slate-900 transition-colors"
+                                        >
+                                            {ind.title} in {city}
+                                        </a>
+                                    ))
+                                }
+                            </div>
+                        </div>
+
+                        {/* 2. Same Profession in Other Cities */}
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-200 pb-2">
+                                {industry.title} Receipts form Nearby Locations
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {country.cities
+                                    .filter(c => c !== city) // Exclude current
+                                    .sort(() => 0.5 - Math.random()) // Shuffle
+                                    .slice(0, 15) // Take 15 random cities
+                                    .map((c) => (
+                                        <a
+                                            key={c}
+                                            href={`/${variation.prefix}-${industry.slug}-in-${slugify(c)}`}
+                                            className="text-sm text-slate-600 bg-white px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-900 hover:text-slate-900 transition-colors"
+                                        >
+                                            {industry.title} in {c}
+                                        </a>
+                                    ))
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
             <footer className="bg-slate-950 text-slate-500 py-12 border-t border-slate-900">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex items-center gap-2">
