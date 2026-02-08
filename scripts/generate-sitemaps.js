@@ -1,4 +1,4 @@
-// Script untuk generate sitemap fisik - FULL 3 JUTA URLs
+// Script untuk generate sitemap fisik - LIMITED TO 30k URLs
 // Jalankan dengan: node scripts/generate-sitemaps.js
 
 import fs from 'fs';
@@ -13,6 +13,7 @@ import { COUNTRIES, INDUSTRIES, VARIATIONS } from '../lib/pseo-data.js';
 
 const BASE_URL = 'https://freereceipt.online';
 const MAX_URLS_PER_SITEMAP = 1000;
+const TOTAL_LIMIT = 30000;
 const PUBLIC_DIR = path.join(__dirname, '..', 'public', 'sitemaps');
 
 // Buat folder sitemaps jika belum ada
@@ -56,17 +57,8 @@ ${sitemapsXml}
 }
 
 function main() {
-    console.log('🚀 Generating sitemaps with FULL DATA...');
-    console.log(`📊 Countries: ${COUNTRIES.length}`);
-    console.log(`📊 Industries: ${INDUSTRIES.length}`);
-    console.log(`📊 Variations: ${VARIATIONS.length}`);
-
-    let totalCities = 0;
-    COUNTRIES.forEach(c => totalCities += c.cities.length);
-    console.log(`📊 Total Cities: ${totalCities}`);
-
-    const estimatedTotal = totalCities * INDUSTRIES.length * VARIATIONS.length;
-    console.log(`📊 Estimated Total URLs: ${estimatedTotal.toLocaleString()}`);
+    console.log('🚀 Generating LIMITED sitemaps...');
+    console.log(`📊 Total Limit: ${TOTAL_LIMIT.toLocaleString()}`);
 
     const sitemapFiles = [];
     let currentUrls = [];
@@ -78,10 +70,13 @@ function main() {
     totalUrls++;
 
     // Loop semua kombinasi
+    outerLoop:
     for (const country of COUNTRIES) {
         for (const city of country.cities) {
             for (const ind of INDUSTRIES) {
                 for (const vary of VARIATIONS) {
+                    if (totalUrls >= TOTAL_LIMIT) break outerLoop;
+
                     const slug = `${vary.prefix}-${ind.slug}-in-${slugify(city)}`;
                     currentUrls.push({
                         loc: `${BASE_URL}/${slug}`,
@@ -90,7 +85,7 @@ function main() {
                     });
                     totalUrls++;
 
-                    // Kalau sudah 45k, simpan file
+                    // Kalau sudah sesuai limit per file, simpan file
                     if (currentUrls.length >= MAX_URLS_PER_SITEMAP) {
                         const filename = `sitemap-${fileIndex}.xml`;
                         const xml = createSitemapXml(currentUrls);
