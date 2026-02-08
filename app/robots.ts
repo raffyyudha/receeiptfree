@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 // CHANGE THIS TO YOUR PRODUCTION DOMAIN
-const BASE_URL = 'https://receeiptfree.online';
+const BASE_URL = 'https://freereceipt.online';
 
 export default function robots(): MetadataRoute.Robots {
     return {

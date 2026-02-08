@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 // Import data dari lib/pseo-data.js
 import { COUNTRIES, INDUSTRIES, VARIATIONS } from '../lib/pseo-data.js';
 
-const BASE_URL = 'https://receeiptfree.online';
+const BASE_URL = 'https://freereceipt.online';
 const MAX_URLS_PER_SITEMAP = 1000;
 const PUBLIC_DIR = path.join(__dirname, '..', 'public', 'sitemaps');
 
