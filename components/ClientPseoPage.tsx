@@ -143,6 +143,9 @@ export default function ClientPseoPage({ slug }: ClientPseoPageProps) {
         footer: `Registered in ${city}, ${country.name}.`
     };
 
+    const labelHasFree = variation.label.toLowerCase().startsWith('free ');
+    const displayLabel = labelHasFree ? variation.label.slice(5) : variation.label;
+
     return (
         <main className="min-h-screen bg-slate-50">
             {/* Hero Section */}
@@ -154,7 +157,7 @@ export default function ClientPseoPage({ slug }: ClientPseoPageProps) {
                     </div>
 
                     <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-                        Free <span className="text-emerald-400">{variation.label}</span> for <br className="hidden sm:block" />
+                        Free <span className="text-emerald-400">{displayLabel}</span> for <br className="hidden sm:block" />
                         {industry.title} in {city}
                     </h1>
 
