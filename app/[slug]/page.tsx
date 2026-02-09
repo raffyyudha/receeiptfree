@@ -82,8 +82,9 @@ function getDataFromSlug(slug: string) {
     return null;
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const data = getDataFromSlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const data = getDataFromSlug(slug);
     if (!data) return {};
 
     const { country, city, industry, variation } = data;
@@ -93,14 +94,15 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default function PseoPage({ params }: { params: { slug: string } }) {
-    const data = getDataFromSlug(params.slug);
+export default async function PseoPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const data = getDataFromSlug(slug);
     if (!data) notFound();
 
     const { country, city, industry, variation } = data;
 
     // Seeded Randomness
-    const seed = stringToSeed(params.slug);
+    const seed = stringToSeed(slug);
     const rand = mulberry32(seed);
 
     // 1. Spintax Intro
