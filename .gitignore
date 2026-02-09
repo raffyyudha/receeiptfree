@@ -23,3 +23,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Secrets
+service-account.json
+*-ed2963b9e996.json
+.env*
+.env.local
+
+
