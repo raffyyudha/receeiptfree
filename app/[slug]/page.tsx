@@ -1,9 +1,16 @@
 
 import { notFound } from 'next/navigation';
 import { COUNTRIES, INDUSTRIES, INTRO_TEMPLATES, VARIATIONS, BENEFITS, FIRST_NAMES, REVIEW_TEMPLATES } from '../../lib/pseo-data';
-import { ReceiptGenerator } from '../../components/ReceiptGenerator';
+// import { ReceiptGenerator } from '../../components/ReceiptGenerator'; // OLD: Causing Server Timeout/Error
+import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
 import { Receipt, Zap, ArrowRight, CheckCircle, HelpCircle, Star, User } from 'lucide-react';
+
+// NEW: Client-only Load. Server ignores this component completely. Zero load on server.
+const ReceiptGenerator = dynamic(() => import('../../components/ReceiptGenerator').then(mod => mod.ReceiptGenerator), {
+    ssr: false,
+    loading: () => <div className="h-96 w-full animate-pulse bg-slate-100 rounded-xl" />
+});
 
 // ISR Config: Cache pages for 1 day. fix 500 error by avoiding runtime processing
 export const revalidate = 86400;
