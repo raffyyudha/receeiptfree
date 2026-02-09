@@ -71,9 +71,12 @@ function getDataFromSlug(slug: string) {
 
     // 4. Find City & Country - O(C) ~1000 items
     // We iterate countries, then check if slugified city matches
+    // We iterate countries, then check if slugified city matches
     for (const country of COUNTRIES) {
         for (const c of country.cities) {
             if (slugify(c) === citySlug) {
+                // STRICT VALIDATION
+                if (!country || !c || !industry || !variation) return null;
                 return { country, city: c, industry, variation };
             }
         }
@@ -85,25 +88,34 @@ function getDataFromSlug(slug: string) {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     try {
         const resolvedParams = await params;
-        if (!resolvedParams || !resolvedParams.slug) return {};
+        if (!resolvedParams?.slug) return {};
 
         const slug = decodeURIComponent(resolvedParams.slug);
         const data = getDataFromSlug(slug);
         if (!data) return {};
 
         const { country, city, industry, variation } = data;
+
+        // Safe access with fallbacks
+        const label = variation?.label || 'Receipt';
+        const title = industry?.title || 'Professional';
+        const cityName = city || 'Your City';
+        const countryCode = country?.code || 'US';
+        const countryName = country?.name || 'Country';
+
         return {
-            title: `Free ${variation.label} for ${industry.title} in ${city} (${country.code})`,
-            description: `Generate professional ${variation.label} for ${industry.title} in ${city}. No watermark, 100% free PDF. Compliant with ${country.name} tax rules.`
+            title: `Free ${label} for ${title} in ${cityName} (${countryCode})`,
+            description: `Generate professional ${label} for ${title} in ${cityName}. No watermark, 100% free PDF. Compliant with ${countryName} tax rules.`
         };
     } catch (error) {
-        console.error("Error generating metadata:", error);
+        // Silent fallback
         return {
             title: "Free Receipt Generator",
             description: "Generate free receipts and invoices instantly."
         };
     }
 }
+// Force Rebuild v3
 
 export default async function PseoPage({ params }: { params: Promise<{ slug: string }> }) {
     let slug = '';
