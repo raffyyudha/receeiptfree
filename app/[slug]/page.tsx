@@ -5,6 +5,9 @@ import { ReceiptGenerator } from '../../components/ReceiptGenerator';
 import { Metadata } from 'next';
 import { Receipt, Zap, ArrowRight, CheckCircle, HelpCircle, Star, User } from 'lucide-react';
 
+// ISR Config: Cache pages for 1 day. fix 500 error by avoiding runtime processing
+export const revalidate = 86400;
+export const dynamicParams = true; // Allow generating pages not in generateStaticParams on demand
 
 function slugify(text: string) {
     return text.toString().toLowerCase()
