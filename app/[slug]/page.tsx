@@ -95,8 +95,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function PseoPage({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = await params;
-    const data = getDataFromSlug(slug);
+    let slug = '';
+    try {
+        const resolvedParams = await params;
+        slug = resolvedParams.slug;
+    } catch (e) {
+        console.error("Error resolving params:", e);
+        notFound();
+    }
+
+    let data;
+    try {
+        data = getDataFromSlug(slug);
+    } catch (e) {
+        console.error(`Error parsing slug "${slug}":`, e);
+        notFound();
+    }
+
     if (!data) notFound();
 
     const { country, city, industry, variation } = data;
@@ -118,8 +133,9 @@ export default async function PseoPage({ params }: { params: Promise<{ slug: str
         .replace(/{variation}/g, variation.label.toLowerCase())
         .replace(/{taxLabel}/g, country.taxLabel)
         .replace(/{currency}/g, country.currency)
-        .replace(/{items0}/g, industry.items[0])
-        .replace(/{items1}/g, industry.items[1]);
+        .replace(/{items0}/g, industry.items[0] || 'Services')
+        .replace(/{items1}/g, industry.items[1] || 'Products');
+
 
     // Resolve Spintax {A|B}
     intro = spinText(intro, safeRand);
