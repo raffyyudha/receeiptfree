@@ -34,12 +34,20 @@ function mulberry32(a: number) {
     }
 }
 
-function spinText(template: string, seedFunc: () => number) {
+function spinText(template: string, rngFn: () => number) {
     if (!template) return "";
-    return template.replace(/\{([^{}]+)\}/g, (match, content) => {
-        const options = content.split('|');
-        return options[Math.floor(seedFunc() * options.length)];
-    });
+    try {
+        const generator = rngFn; // Capture explicitly
+        return template.replace(/\{([^{}]+)\}/g, (match, content) => {
+            const options = content.split('|');
+            if (!generator) return options[0]; // Fallback
+            const randVal = generator();
+            return options[Math.floor(randVal * options.length)];
+        });
+    } catch (e) {
+        console.error("SpinText error:", e);
+        return template;
+    }
 }
 
 interface ClientPseoPageProps {
