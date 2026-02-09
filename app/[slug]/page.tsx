@@ -44,22 +44,20 @@ function spinText(template: string, seedFunc: () => number) {
 }
 
 function getDataFromSlug(slug: string) {
-    // Optimization: Check variations first to fail fast? 
-    // Actually, we must iterate.
+    const normalizedSlug = slugify(slug);
+
     for (const country of COUNTRIES) {
-        // Optimization: Check if slug contains country code or related patterns?
-        // For now, brutal iteration is fine for build/runtime as long as we break early.
         for (const city of country.cities) {
             const citySlug = slugify(city);
-            if (!slug.includes(citySlug)) continue; // Quick check
+            if (!normalizedSlug.includes(citySlug)) continue;
 
             for (const ind of INDUSTRIES) {
                 const indSlug = ind.slug;
-                if (!slug.includes(indSlug)) continue; // Quick check
+                if (!normalizedSlug.includes(indSlug)) continue;
 
                 for (const vary of VARIATIONS) {
-                    const targetSlug = `${vary.prefix}-${indSlug}-in-${citySlug}`;
-                    if (slug === targetSlug) {
+                    const targetSlug = slugify(`${vary.prefix}-${indSlug}-in-${citySlug}`);
+                    if (normalizedSlug === targetSlug) {
                         return { country, city, industry: ind, variation: vary };
                     }
                 }
