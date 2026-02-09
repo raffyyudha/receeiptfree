@@ -83,22 +83,38 @@ function getDataFromSlug(slug: string) {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-    const { slug } = await params;
-    const data = getDataFromSlug(slug);
-    if (!data) return {};
+    try {
+        const resolvedParams = await params;
+        if (!resolvedParams || !resolvedParams.slug) return {};
 
-    const { country, city, industry, variation } = data;
-    return {
-        title: `Free ${variation.label} for ${industry.title} in ${city} (${country.code})`,
-        description: `Generate professional ${variation.label} for ${industry.title} in ${city}. No watermark, 100% free PDF. Compliant with ${country.name} tax rules.`
-    };
+        const slug = decodeURIComponent(resolvedParams.slug);
+        const data = getDataFromSlug(slug);
+        if (!data) return {};
+
+        const { country, city, industry, variation } = data;
+        return {
+            title: `Free ${variation.label} for ${industry.title} in ${city} (${country.code})`,
+            description: `Generate professional ${variation.label} for ${industry.title} in ${city}. No watermark, 100% free PDF. Compliant with ${country.name} tax rules.`
+        };
+    } catch (error) {
+        console.error("Error generating metadata:", error);
+        return {
+            title: "Free Receipt Generator",
+            description: "Generate free receipts and invoices instantly."
+        };
+    }
 }
 
 export default async function PseoPage({ params }: { params: Promise<{ slug: string }> }) {
     let slug = '';
     try {
         const resolvedParams = await params;
-        slug = resolvedParams.slug;
+        if (resolvedParams && resolvedParams.slug) {
+            slug = decodeURIComponent(resolvedParams.slug);
+        } else {
+            console.error("Params or slug missing");
+            notFound();
+        }
     } catch (e) {
         console.error("Error resolving params:", e);
         notFound();
@@ -106,6 +122,7 @@ export default async function PseoPage({ params }: { params: Promise<{ slug: str
 
     let data;
     try {
+        if (!slug) notFound();
         data = getDataFromSlug(slug);
     } catch (e) {
         console.error(`Error parsing slug "${slug}":`, e);
