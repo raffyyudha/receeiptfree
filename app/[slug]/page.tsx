@@ -9,6 +9,20 @@ import { Receipt, Zap, ArrowRight, CheckCircle, HelpCircle, Star, User } from 'l
 export const revalidate = 86400;
 export const dynamicParams = true; // Allow generating pages not in generateStaticParams on demand
 
+// Pre-render a few popular pages to warm up the cache and prevent 500 errors
+export async function generateStaticParams() {
+    const params = [];
+    const SAMPLE_SIZE = 5;
+
+    // Generate ~20 sample paths
+    for (const city of ['new-york', 'los-angeles', 'chicago', 'houston', 'london', 'singapore']) {
+        for (const ind of ['plumber', 'freelancer', 'contractor']) {
+            params.push({ slug: `receipt-template-for-${ind}-in-${city}` });
+        }
+    }
+    return params;
+}
+
 function slugify(text: string) {
     return text.toString().toLowerCase()
         .replace(/\s+/g, '-')
